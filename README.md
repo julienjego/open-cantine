@@ -1,2 +1,3 @@
-# cantine-mirabeau-data
+# Open Cantine
+
 Anonymous data of the "cantine" at Mirabeau
