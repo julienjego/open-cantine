@@ -1,0 +1,96 @@
+---
+title: "Open Cantine"
+author: ""
+highlighter: highlight.js
+output: pdf_document
+job: null
+knit: slidify::knit2slides
+mode: selfcontained
+hitheme: tomorrow
+subtitle: "La cantine en data"
+framework: io2012
+widgets: []
+---
+
+<script type='text/javascript'>
+$(function() {
+    $("p:has(img)").addClass('centered');
+});
+</script>
+
+## Données de la cantine
+
+Variables
+- Date
+- Heure
+- Numéro du ticket
+  - Incrémenté à chaque passage
+- Numéro de caisse
+  - 1: Cantine
+  - 2: Cantine
+  - 3: Cafétéria
+  - 4: Cantine
+
+--- .class #id 
+
+
+## Évolution des numéros de ticket
+
+```{r echo=FALSE}
+
+df <- read.csv("../data/Cantine-Mirabeau.csv")
+df$datetime <- strptime(paste(df$Date,df$Heure) ,format = "%d/%m/%y %H:%M:%S")
+df$Caisse <- as.factor(df$Caisse)
+
+library(ggplot2)
+
+ggplot( df , aes(x=datetime, y=Ticket)) +
+geom_line(aes(group=Caisse, color=Caisse))
+
+```
+
+--- .class #id 
+
+## Passage par minute ces derniers jours
+
+```{r echo=FALSE}
+
+# Timestamp
+df$ts <- as.numeric(df$datetime)
+daydf <- aggregate( ts ~ Date + Caisse, data = df, max)
+names(daydf)[names(daydf) == "ts"] <- "ts_max"
+daydf <- merge(daydf,aggregate( ts ~ Date + Caisse, data = df, min))
+names(daydf)[names(daydf) == "ts"] <- "ts_min"
+
+# Order by ts
+daydf <- daydf[order(daydf$ts_max,decreasing = TRUE),]
+
+# Ticket
+daydf <- merge(daydf,aggregate( Ticket ~ Date + Caisse, data = df, max))
+names(daydf)[names(daydf) == "Ticket"] <- "ticket_max"
+daydf <- merge(daydf,aggregate( Ticket ~ Date + Caisse, data = df, min))
+names(daydf)[names(daydf) == "Ticket"] <- "ticket_min"
+
+# Fréquence journalière par minute
+daydf$frequence <- (daydf$ticket_max - daydf$ticket_min) / (daydf$ts_max - daydf$ts_min) * 60
+
+ggplot(daydf, aes(fill=Caisse, y=frequence, x=Date
+                  )) + geom_bar(position="dodge", stat="identity")
+```
+
+--- .class #id 
+
+## Fréquences moyennes par jour de la semaine
+
+```{r echo=FALSE}
+
+daydf$day <- format(strptime(daydf$Date ,format = "%d/%m/%y"),format="%A")
+daydf2 <- aggregate( frequence ~ day + Caisse, data = daydf, mean)
+daydf2 <- daydf2[which(daydf2$Caisse != 3),]
+daydf2 <-  aggregate( frequence ~ day, data = daydf2, mean)
+
+ggplot(daydf2, aes(y=frequence, x=day
+                  )) + geom_bar(position="dodge", stat="identity")
+```
+
+--- .class #id 
