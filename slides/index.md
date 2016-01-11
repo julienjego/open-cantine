@@ -2,12 +2,12 @@
 title: "Open Cantine"
 author: ""
 highlighter: highlight.js
-output: pdf_document
-job: null
+output: html
+job: ""
 knit: slidify::knit2slides
 mode: selfcontained
 hitheme: tomorrow
-subtitle: "La cantine en data"
+subtitle: "Visualiser des données parcellaires"
 framework: io2012
 widgets: []
 ---
@@ -18,7 +18,7 @@ $(function() {
 });
 </script>
 
-## Données de la cantine
+## Les données de la cantine
 
 Variables
 - Date
@@ -34,7 +34,7 @@ Variables
 --- .class #id 
 
 
-## Évolution des numéros de ticket
+## Évolution des numéros de ticket par caisse
 
 ![plot of chunk unnamed-chunk-1](assets/fig/unnamed-chunk-1-1.png) 
 
@@ -46,8 +46,12 @@ Variables
 
 --- .class #id 
 
-## Fréquences moyennes par jour de la semaine
+## Fréquences par jour de la semaine
 
 ![plot of chunk unnamed-chunk-3](assets/fig/unnamed-chunk-3-1.png) 
 
 --- .class #id 
+
+## Débit moyen par caisse sur un service
+
+![plot of chunk unnamed-chunk-4](assets/fig/unnamed-chunk-4-1.png) 

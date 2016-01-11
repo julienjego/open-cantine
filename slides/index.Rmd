@@ -2,12 +2,12 @@
 title: "Open Cantine"
 author: ""
 highlighter: highlight.js
-output: pdf_document
-job: null
+output: html
+job: ""
 knit: slidify::knit2slides
 mode: selfcontained
 hitheme: tomorrow
-subtitle: "La cantine en data"
+subtitle: "Visualiser des données parcellaires"
 framework: io2012
 widgets: []
 ---
@@ -18,7 +18,7 @@ $(function() {
 });
 </script>
 
-## Données de la cantine
+## Les données de la cantine
 
 Variables
 - Date
@@ -34,7 +34,7 @@ Variables
 --- .class #id 
 
 
-## Évolution des numéros de ticket
+## Évolution des numéros de ticket par caisse
 
 ```{r echo=FALSE}
 
@@ -74,13 +74,18 @@ names(daydf)[names(daydf) == "Ticket"] <- "ticket_min"
 # Fréquence journalière par minute
 daydf$frequence <- (daydf$ticket_max - daydf$ticket_min) / (daydf$ts_max - daydf$ts_min) * 60
 
+#summary(daydf)
 ggplot(daydf, aes(fill=Caisse, y=frequence, x=Date
                   )) + geom_bar(position="dodge", stat="identity")
+
+#scale_x_date()
+#pretty_date()
+
 ```
 
 --- .class #id 
 
-## Fréquences moyennes par jour de la semaine
+## Fréquences par jour de la semaine
 
 ```{r echo=FALSE}
 
@@ -94,3 +99,64 @@ ggplot(daydf2, aes(y=frequence, x=day
 ```
 
 --- .class #id 
+
+## Débit moyen par caisse sur un service
+
+```{r echo=FALSE,message=FALSE}
+
+library(zoo)
+
+dfp <- data.frame()
+  
+dfcantine <- df[df$Caisse != 4 ,]
+dfcantine$Caisse <- as.character(dfcantine$Caisse)
+
+for(pcaisse in unique(dfcantine$Caisse)){
+  
+  dfcantinetemp <- dfcantine[dfcantine$Caisse == pcaisse ,]
+
+  for(pdate in unique(dfcantinetemp$Date)){
+    
+    dfcantinetempdate <- dfcantinetemp[dfcantinetemp$Date == pdate,]
+    
+    dfdifftemp <- cbind(append(diff(dfcantinetempdate$Ticket[dfcantinetempdate$Caisse == pcaisse & dfcantinetempdate$Date == pdate]),0),dfcantinetempdate)
+    names(dfdifftemp)[1] <- "ticket_diff"
+    dfdifftemp <- cbind(append(diff(dfcantinetempdate$ts[dfcantinetempdate$Caisse == pcaisse & dfcantinetempdate$Date == pdate]),0),dfdifftemp)
+    names(dfdifftemp)[1] <- "ts_diff"
+    
+    dfsecstemp <- data.frame( c(min(dfdifftemp$ts):max(dfdifftemp$ts)))
+    names(dfsecstemp)[1] <- "ts"
+    
+    dfsecstemp <- merge(dfsecstemp,dfdifftemp,all = TRUE)
+
+    dfsecstemp$ts_diff <- na.locf(dfsecstemp$ts_diff)
+    
+    dfsecstemp$ticket_diff <- na.locf(dfsecstemp$ticket_diff)
+    dfsecstemp$Heure <- na.locf(dfsecstemp$Heure)
+    dfsecstemp$frequence <- dfsecstemp$ticket_diff/dfsecstemp$ts_diff*60
+    dfsecstemp$Date <- na.locf(dfsecstemp$Date)
+    dfsecstemp$Caisse <- na.locf(dfsecstemp$Caisse)
+    dfsecstemp$Ticket <- NULL
+    dfsecstemp$datetime <- NULL
+    
+    if(nrow(dfp) == 0){
+      dfp <- dfsecstemp
+    }
+    else{
+      dfp <- rbind(dfsecstemp,dfp)
+    }
+  }
+}
+
+dfp$datetime <- as.POSIXct(dfp$ts, origin="1970-01-01")
+dfp$heurelabel <-  format(dfp$datetime, format="%T")
+dfp$heureminute <-  format(dfp$datetime, format="%H:%M")
+dfp <- dfp[dfp$frequence != 0,]
+
+dfpag <- aggregate(frequence ~ heureminute,dfp,mean)
+dfpag$datetime <- strptime(paste("01/01/16",dfpag$heureminute) ,format = "%d/%m/%y %H:%M")
+
+library(ggplot2)
+ggplot(dfpag,aes(x = datetime, y = frequence)) +geom_line()
+
+```
