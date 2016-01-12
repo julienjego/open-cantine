@@ -2,10 +2,9 @@
 title: "Open Cantine"
 author: ""
 highlighter: highlight.js
-output: html
+output: html_document
 job: ""
 knit: slidify::knit2slides
-mode: selfcontained
 hitheme: tomorrow
 subtitle: "Visualiser des données parcellaires"
 framework: io2012
@@ -28,8 +27,8 @@ Variables
 - Numéro de caisse
   - 1: Cantine
   - 2: Cantine
-  - 3: Cafétéria
-  - 4: Cantine
+  - 3: Cantine
+  - 4: Cafétéria
 
 --- .class #id 
 
@@ -89,9 +88,10 @@ ggplot(daydf, aes(fill=Caisse, y=frequence, x=Date
 
 ```{r echo=FALSE}
 
+
 daydf$day <- format(strptime(daydf$Date ,format = "%d/%m/%y"),format="%A")
 daydf2 <- aggregate( frequence ~ day + Caisse, data = daydf, mean)
-daydf2 <- daydf2[which(daydf2$Caisse != 3),]
+daydf2 <- daydf2[which(daydf2$Caisse != 4),]
 daydf2 <-  aggregate( frequence ~ day, data = daydf2, mean)
 
 ggplot(daydf2, aes(y=frequence, x=day
