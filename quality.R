@@ -8,5 +8,6 @@ ggplot( df , aes(x=datetime, y=Ticket)) +
   geom_line(aes(group=Caisse, color=Caisse))
 
 
+
 # Ticket minimum Caisse 4
 min(df$Ticket[df$Caisse == 4])
