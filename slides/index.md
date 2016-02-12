@@ -2,13 +2,14 @@
 title: "Open Cantine"
 author: ""
 highlighter: highlight.js
-output: html
+output: html_document
 job: ""
 knit: slidify::knit2slides
-mode: selfcontained
 hitheme: tomorrow
-subtitle: "Visualiser des données parcellaires"
+subtitle: "Reconstituer et visualiser des données parcellaires"
 framework: io2012
+mode: selfcontained
+license: by
 widgets: []
 ---
 
@@ -28,8 +29,8 @@ Variables
 - Numéro de caisse
   - 1: Cantine
   - 2: Cantine
-  - 3: Cafétéria
-  - 4: Cantine
+  - 3: Cantine
+  - 4: Cafétéria
 
 --- .class #id 
 
@@ -55,3 +56,6 @@ Variables
 ## Débit moyen par caisse sur un service
 
 ![plot of chunk unnamed-chunk-4](assets/fig/unnamed-chunk-4-1.png) 
+
+
+

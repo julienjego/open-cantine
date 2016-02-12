@@ -5,3 +5,9 @@ View slides: [index.md](https://github.com/cbenz/open-cantine/blob/master/slides
 ## Generate slides
 
 TODO
+
+
+## Publish
+
+library(slidify)
+publish(user = "boupetch", repo = "cbenz/open-cantine")
