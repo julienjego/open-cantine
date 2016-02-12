@@ -6,8 +6,10 @@ output: html_document
 job: ""
 knit: slidify::knit2slides
 hitheme: tomorrow
-subtitle: "Visualiser des données parcellaires"
+subtitle: "Reconstituer et visualiser des données parcellaires"
 framework: io2012
+mode: selfcontained
+license: by
 widgets: []
 ---
 
@@ -160,3 +162,6 @@ library(ggplot2)
 ggplot(dfpag,aes(x = datetime, y = frequence)) +geom_line()
 
 ```
+
+
+
